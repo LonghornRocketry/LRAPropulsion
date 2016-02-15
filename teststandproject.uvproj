@@ -221,7 +221,7 @@
             <hadIRAM2>0</hadIRAM2>
             <hadIROM2>0</hadIROM2>
             <StupSel>8</StupSel>
-            <useUlib>0</useUlib>
+            <useUlib>1</useUlib>
             <EndSel>0</EndSel>
             <uLtcg>0</uLtcg>
             <RoSelD>3</RoSelD>
@@ -360,7 +360,7 @@
             <useXO>0</useXO>
             <VariousControls>
               <MiscControls></MiscControls>
-              <Define></Define>
+              <Define>PART_TM4C1294NCPDT</Define>
               <Undefine></Undefine>
               <IncludePath></IncludePath>
             </VariousControls>
@@ -474,6 +474,26 @@
               <FileName>main.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\main.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\debug.c</FilePath>
+            </File>
+            <File>
+              <FileName>networking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\networking.c</FilePath>
+            </File>
+            <File>
+              <FileName>debug.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\debug.h</FilePath>
+            </File>
+            <File>
+              <FileName>networking.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\src\networking.h</FilePath>
             </File>
           </Files>
         </Group>
@@ -1054,6 +1074,196 @@
               <FileName>tm4c1294ncpdt.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\inc\tm4c1294ncpdt.h</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>uIP Library</GroupName>
+          <GroupOption>
+            <CommonProperty>
+              <UseCPPCompiler>0</UseCPPCompiler>
+              <RVCTCodeConst>0</RVCTCodeConst>
+              <RVCTZI>0</RVCTZI>
+              <RVCTOtherData>0</RVCTOtherData>
+              <ModuleSelection>0</ModuleSelection>
+              <IncludeInBuild>2</IncludeInBuild>
+              <AlwaysBuild>2</AlwaysBuild>
+              <GenerateAssemblyFile>2</GenerateAssemblyFile>
+              <AssembleAssemblyFile>2</AssembleAssemblyFile>
+              <PublicsOnly>2</PublicsOnly>
+              <StopOnExitCode>11</StopOnExitCode>
+              <CustomArgument></CustomArgument>
+              <IncludeLibraryModules></IncludeLibraryModules>
+              <ComprImg>1</ComprImg>
+            </CommonProperty>
+            <GroupArmAds>
+              <Cads>
+                <interw>2</interw>
+                <Optim>0</Optim>
+                <oTime>2</oTime>
+                <SplitLS>2</SplitLS>
+                <OneElfS>2</OneElfS>
+                <Strict>2</Strict>
+                <EnumInt>2</EnumInt>
+                <PlainCh>2</PlainCh>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <wLevel>0</wLevel>
+                <uThumb>2</uThumb>
+                <uSurpInc>2</uSurpInc>
+                <uC99>2</uC99>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath>.\; .\src</IncludePath>
+                </VariousControls>
+              </Cads>
+              <Aads>
+                <interw>2</interw>
+                <Ropi>2</Ropi>
+                <Rwpi>2</Rwpi>
+                <thumb>2</thumb>
+                <SplitLS>2</SplitLS>
+                <SwStkChk>2</SwStkChk>
+                <NoWarn>2</NoWarn>
+                <uSurpInc>2</uSurpInc>
+                <useXO>2</useXO>
+                <VariousControls>
+                  <MiscControls></MiscControls>
+                  <Define></Define>
+                  <Undefine></Undefine>
+                  <IncludePath></IncludePath>
+                </VariousControls>
+              </Aads>
+            </GroupArmAds>
+          </GroupOption>
+          <Files>
+            <File>
+              <FileName>clock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\clock.h</FilePath>
+            </File>
+            <File>
+              <FileName>clock-arch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\clock-arch.h</FilePath>
+            </File>
+            <File>
+              <FileName>lc.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\lc.h</FilePath>
+            </File>
+            <File>
+              <FileName>lc-addrlabels.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\lc-addrlabels.h</FilePath>
+            </File>
+            <File>
+              <FileName>lc-switch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\lc-switch.h</FilePath>
+            </File>
+            <File>
+              <FileName>psock.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\psock.c</FilePath>
+            </File>
+            <File>
+              <FileName>psock.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\psock.h</FilePath>
+            </File>
+            <File>
+              <FileName>pt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\pt.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip_arch.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip_arch.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip_arp.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip_arp.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip_arp.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip_arp.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip_timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip_timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip_timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip_timer.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip-conf.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip-conf.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip-fw.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip-fw.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip-fw.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip-fw.h</FilePath>
+            </File>
+            <File>
+              <FileName>uiplib.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uiplib.c</FilePath>
+            </File>
+            <File>
+              <FileName>uiplib.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uiplib.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip-neighbor.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip-neighbor.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip-neighbor.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip-neighbor.h</FilePath>
+            </File>
+            <File>
+              <FileName>uipopt.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uipopt.h</FilePath>
+            </File>
+            <File>
+              <FileName>uip-split.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\uip\uip-split.c</FilePath>
+            </File>
+            <File>
+              <FileName>uip-split.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\uip\uip-split.h</FilePath>
             </File>
           </Files>
         </Group>
