@@ -505,6 +505,11 @@
               <FileType>5</FileType>
               <FilePath>.\src\packet_receiver.h</FilePath>
             </File>
+            <File>
+              <FileName>telemetry.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\telemetry.c</FilePath>
+            </File>
           </Files>
         </Group>
         <Group>

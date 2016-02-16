@@ -1,10 +1,16 @@
+#include <stdbool.h>
+
 #include "packet_receiver.h"
 #include "debug.h"
+
+#include "driverlib/gpio.h"
+#include "inc/hw_memmap.h"
 
 void process_packet(uint8_t* data, uint16_t len) {
 	
 	uint8_t type = data[0];
-	len--; //len is now the length of the packet size
+	len--;  //len is now the length of the actual packet
+	data++; //advance ptr to start of data
 	
 	if(type == PACKET_BASIC) {
 		
@@ -14,7 +20,11 @@ void process_packet(uint8_t* data, uint16_t len) {
 		
 		struct packet_basic *pkt = (struct packet_basic *) data;
 		
-		debug_print_u32(pkt->led0);
+		if (pkt->led0) {
+			GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
+		} else {
+			GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
+		}
 		
 	} else {
 		debug_print("packet_receiver got unknown packet type: ");
