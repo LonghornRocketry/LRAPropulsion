@@ -1,6 +1,6 @@
 Dependencies for Project 'teststandproject', Target 'Target 1': (DO NOT MODIFY !)
 F (.\startup_rvmdk.S)(0x56A82341)(--cpu Cortex-M4.fp --pd "__EVAL SETA 1" -g --apcs=interwork --pd "__MICROLIB SETA 1"-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129--list .\build\startup_rvmdk.lst --xref -o .\build\startup_rvmdk.o --depend .\build\startup_rvmdk.d)
-F (.\src\main.c)(0x56C2228D)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\main.o --omf_browse .\build\main.crf --depend .\build\main.d)
+F (.\src\main.c)(0x56C27BEB)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\main.o --omf_browse .\build\main.crf --depend .\build\main.d)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdio.h)(0x51C87C24)
@@ -10,24 +10,27 @@ I (.\driverlib/sysctl.h)(0x56A7E03B)
 I (.\driverlib/systick.h)(0x56A7E03B)
 I (.\driverlib/pin_map.h)(0x56A7E03B)
 I (.\inc/hw_ints.h)(0x56A7E047)
-I (src\debug.h)(0x56C1517D)
-I (src\networking.h)(0x56C223B3)
-F (.\src\debug.c)(0x56C22305)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\debug.o --omf_browse .\build\debug.crf --depend .\build\debug.d)
+I (src\debug.h)(0x56C26657)
+I (src\networking.h)(0x56C280B8)
+I (.\main.h)(0x56C27874)
+F (.\src\debug.c)(0x56C27CD4)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\debug.o --omf_browse .\build\debug.crf --depend .\build\debug.d)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdio.h)(0x51C87C24)
-I (src\debug.h)(0x56C1517D)
+I (src\debug.h)(0x56C26657)
 I (.\inc/hw_memmap.h)(0x56A7E047)
 I (.\driverlib/sysctl.h)(0x56A7E03B)
 I (.\driverlib/uart.h)(0x56A7E03B)
 I (.\driverlib/gpio.h)(0x56A7E03B)
 I (.\driverlib/pin_map.h)(0x56A7E03B)
 I (.\driverlib/timer.h)(0x56A7E03B)
-F (.\src\networking.c)(0x56C1AC15)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\networking.o --omf_browse .\build\networking.crf --depend .\build\networking.d)
+F (.\src\networking.c)(0x56C28658)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\networking.o --omf_browse .\build\networking.crf --depend .\build\networking.d)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
-I (src\networking.h)(0x56C223B3)
-I (src\debug.h)(0x56C1517D)
+I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
+I (src\networking.h)(0x56C280B8)
+I (src\debug.h)(0x56C26657)
+I (.\main.h)(0x56C27874)
 I (.\driverlib/sysctl.h)(0x56A7E03B)
 I (.\driverlib/emac.h)(0x56A7E03B)
 I (.\driverlib/interrupt.h)(0x56A7E03B)
@@ -36,10 +39,13 @@ I (.\inc/hw_emac.h)(0x56A7E047)
 I (.\inc/hw_ints.h)(0x56A7E047)
 I (.\uip/uip.h)(0x56A7E04E)
 I (.\uip/uipopt.h)(0x56A7E04E)
-I (.\uip/uip-conf.h)(0x56C22397)
+I (.\uip/uip-conf.h)(0x56C272C9)
 I (.\uip/uip_arp.h)(0x56A7E04E)
-F (.\src\debug.h)(0x56C1517D)()
-F (.\src\networking.h)(0x56C223B3)()
+I (.\uip/uip_timer.h)(0x56A7E04E)
+I (.\uip/clock.h)(0x56A7E04E)
+I (.\uip/clock-arch.h)(0x56C278E0)
+F (.\src\debug.h)(0x56C26657)()
+F (.\src\networking.h)(0x56C280B8)()
 F (.\driverlib\adc.c)(0x56A7E03B)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O2 --apcs=interwork -I.-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\adc.o --omf_browse .\build\adc.crf --depend .\build\adc.d)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
@@ -434,7 +440,7 @@ F (.\inc\hw_usb.h)(0x56A7E047)()
 F (.\inc\hw_watchdog.h)(0x56A7E047)()
 F (.\inc\tm4c1294ncpdt.h)(0x56A7E047)()
 F (.\uip\clock.h)(0x56A7E04E)()
-F (.\uip\clock-arch.h)(0x56C186F9)()
+F (.\uip\clock-arch.h)(0x56C278E0)()
 F (.\uip\lc.h)(0x56A7E04E)()
 F (.\uip\lc-addrlabels.h)(0x56A7E04E)()
 F (.\uip\lc-switch.h)(0x56A7E04E)()
@@ -442,9 +448,9 @@ F (.\uip\psock.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB 
 I (C:\Keil\ARM\ARMCC\include\stdio.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (uip\psock.h)(0x56A7E04E)
 I (uip\pt.h)(0x56A7E04E)
@@ -453,40 +459,42 @@ I (uip\lc-switch.h)(0x56A7E04E)
 I (uip\uip.h)(0x56A7E04E)
 F (.\uip\psock.h)(0x56A7E04E)()
 F (.\uip\pt.h)(0x56A7E04E)()
-F (.\uip\uip.c)(0x56C221BD)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uip.o --omf_browse .\build\uip.crf --depend .\build\uip.d)
+F (.\uip\uip.c)(0x56C26B17)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uip.o --omf_browse .\build\uip.crf --depend .\build\uip.d)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (uip\uip_arch.h)(0x56A7E04E)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
+I (C:\Keil\ARM\ARMCC\include\stdio.h)(0x51C87C24)
 F (.\uip\uip.h)(0x56A7E04E)()
 F (.\uip\uip_arch.h)(0x56A7E04E)()
 F (.\uip\uip_arp.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uip_arp.o --omf_browse .\build\uip_arp.crf --depend .\build\uip_arp.d)
 I (uip\uip_arp.h)(0x56A7E04E)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
 F (.\uip\uip_arp.h)(0x56A7E04E)()
 F (.\uip\uip_timer.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uip_timer.o --omf_browse .\build\uip_timer.crf --depend .\build\uip_timer.d)
 I (uip\clock.h)(0x56A7E04E)
-I (uip\clock-arch.h)(0x56C186F9)
+I (uip\clock-arch.h)(0x56C278E0)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
+I (.\main.h)(0x56C27874)
 I (uip\uip_timer.h)(0x56A7E04E)
 F (.\uip\uip_timer.h)(0x56A7E04E)()
-F (.\uip\uip-conf.h)(0x56C22397)()
+F (.\uip\uip-conf.h)(0x56C272C9)()
 F (.\uip\uip-fw.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uip-fw.o --omf_browse .\build\uip-fw.crf --depend .\build\uip-fw.d)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (uip\uip_arch.h)(0x56A7E04E)
 I (uip\uip-fw.h)(0x56A7E04E)
@@ -495,9 +503,9 @@ F (.\uip\uip-fw.h)(0x56A7E04E)()
 F (.\uip\uiplib.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MICROLIB -g -O0 --apcs=interwork -I.\ -I.\src-I C:\Keil\ARM\RV31\INC-I C:\Keil\ARM\CMSIS\Include-I C:\Keil\ARM\Inc\TI\TM4C129-DPART_TM4C1294NCPDT -DTM4C1294NCPDT-o .\build\uiplib.o --omf_browse .\build\uiplib.crf --depend .\build\uiplib.d)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (uip\uiplib.h)(0x56A7E04E)
 F (.\uip\uiplib.h)(0x56A7E04E)()
@@ -505,9 +513,9 @@ F (.\uip\uip-neighbor.c)(0x56A7E04E)(--c99 -c --cpu Cortex-M4.fp -D__EVAL -D__MI
 I (uip\uip-neighbor.h)(0x56A7E04E)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
 F (.\uip\uip-neighbor.h)(0x56A7E04E)()
@@ -517,9 +525,9 @@ I (C:\Keil\ARM\ARMCC\include\string.h)(0x51C87C24)
 I (uip\uip-split.h)(0x56A7E04E)
 I (uip\uip.h)(0x56A7E04E)
 I (uip\uipopt.h)(0x56A7E04E)
-I (uip\uip-conf.h)(0x56C22397)
+I (uip\uip-conf.h)(0x56C272C9)
 I (C:\Keil\ARM\ARMCC\include\stdint.h)(0x51C87C24)
-I (.\src/networking.h)(0x56C223B3)
+I (.\src/networking.h)(0x56C280B8)
 I (C:\Keil\ARM\ARMCC\include\stdbool.h)(0x51C87C24)
 I (uip\uip-fw.h)(0x56A7E04E)
 I (uip\uip_arch.h)(0x56A7E04E)

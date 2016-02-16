@@ -1046,6 +1046,7 @@ uip_process(u8_t flag)
   uip_ipaddr_copy(BUF->srcipaddr, uip_hostaddr);
 
   UIP_STAT(++uip_stat.icmp.sent);
+	
   goto send;
 
   /* End of IPv4 input header processing code. */

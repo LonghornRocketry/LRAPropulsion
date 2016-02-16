@@ -1,7 +1,10 @@
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
+
 #include "networking.h"
 #include "debug.h"
+#include "main.h"
 
 #include "driverlib/sysctl.h"
 #include "driverlib/emac.h"
@@ -12,6 +15,7 @@
 
 #include "uip/uip.h"
 #include "uip/uip_arp.h"
+#include "uip/uip_timer.h"
 
 static uint8_t mac_addr[] = MACADDR;
 
@@ -27,6 +31,11 @@ static uint8_t tx_buffer[TX_BUFFER_SIZE];
 static volatile bool rx_flag = false;
 static volatile bool tx_complete_flag = false;
 
+struct timer periodic_timer_for_uip;
+struct timer arp_timer_for_uip;
+
+struct uip_udp_conn *udp_socket;
+
 void ethernet_interrupt_handler() {
 	//read and clear interrupt flags
 	uint32_t flags = EMACIntStatus(EMAC0_BASE, true);
@@ -41,17 +50,16 @@ void ethernet_interrupt_handler() {
 	if(flags & EMAC_INT_TRANSMIT) {
 		tx_complete_flag = true;
 	}
+	
 }
 
-void transmit_ethernet_frame() {
-	debug_print("\txmit!\r\n");
+static void transmit_ethernet_frame() {
 	
 	//wait until we own the tx descriptor
 	while(txDescriptor[active_tx_desc].ui32CtrlStatus & DES0_TX_CTRL_OWN) {};
 		
 	if(uip_len > TX_BUFFER_SIZE) uip_len = TX_BUFFER_SIZE;
 	
-		debug_print_u32(uip_len);
 	//copy data into the DMA buffer	
 	for(uint16_t i = 0; i < uip_len; i++) {
 		tx_buffer[i] = uip_buf[i];
@@ -73,6 +81,75 @@ void transmit_ethernet_frame() {
 	//advance to the next DMA descriptor
 	active_tx_desc++;
 	if(active_tx_desc == 3) active_tx_desc = 0;
+}
+
+static void receive_ethernet_frame() {
+	//copy rx data out of the DMA buffer
+	
+	//make sure we own the dma thing
+	if(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_CTRL_OWN) {
+		debug_print("don't own dma!\r\n");
+		while(1);
+	}
+		
+	//check if it contains a valid packet (it'll have error bit set if it's truncated, or if last frame in pkt
+	if(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_ERR) {
+		debug_print("dmaRxDescErr!\r\n");
+		while(1);
+	}
+		
+	//make sure it's the "last descriptor" (it always should be, because the DMA buffer should be bigger than the biggest 
+	//possible eth frame
+	if(!(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_LAST_DESC)) {
+		debug_print("dmaNotLast!\r\n");
+		while(1);
+	}
+	
+	//OK it's probably a good packet
+	uint32_t frame_len = (rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_FRAME_LENGTH_M) >> DES0_RX_STAT_FRAME_LENGTH_S;
+
+	//copy packet from DMA buffer into uIP buffer
+	for(uint16_t i=0; i < frame_len; i++) {
+		uip_buf[i] = rx_buffer[i];
+	}
+	uip_len = frame_len;
+	
+	//look @ header
+	struct uip_eth_hdr *pkt_header = (struct uip_eth_hdr *) uip_buf;
+	
+	if(pkt_header->type == htons(UIP_ETHTYPE_IP)) {
+		//it's an IP packet!
+		
+		uip_arp_ipin();
+		uip_input();
+		
+		//if uIP generated output, send it
+		if(uip_len > 0) {
+			uip_arp_out();
+			transmit_ethernet_frame();
+		}
+		uip_len = 0;
+		
+	} else if (pkt_header->type == htons(UIP_ETHTYPE_ARP)) {
+		//it's an ARP packet!
+	
+		uip_arp_arpin();
+		
+		//if uIP generated output, send it
+		if(uip_len > 0) {
+			transmit_ethernet_frame();
+		}
+		uip_len = 0;
+		
+	} else if (pkt_header->type == htons(UIP_ETHTYPE_IP6)) {
+	}
+	//move on to the next DMA descriptor in the chain
+	active_rx_desc++;
+	if(active_rx_desc == 3) active_rx_desc = 0;
+
+	//give the new active DMA descriptor to the MAC
+	rxDescriptor[active_rx_desc].ui32CtrlStatus = DES0_RX_CTRL_OWN;
+
 }
 
 void networking_init(uint32_t sysClkFreq) {
@@ -107,7 +184,7 @@ void networking_init(uint32_t sysClkFreq) {
 	// Set MAC configuration stuff
 	EMACConfigSet(EMAC0_BASE,
 		EMAC_CONFIG_FULL_DUPLEX |					//attempt to operate in full-duplex mode
-		/*EMAC_CONFIG_CHECKSUM_OFFLOAD |*/		//enable ipv4 header and TCP/UDP/etc checksum checking (reported via status fields)
+		EMAC_CONFIG_CHECKSUM_OFFLOAD |		//enable ipv4 header and TCP/UDP/etc checksum checking (reported via status fields)
 		EMAC_CONFIG_7BYTE_PREAMBLE |			//use a 7 byte preamble at beginning of every frame
 		EMAC_CONFIG_IF_GAP_96BITS |				//interframe gap size between transmitted frames 
 		EMAC_CONFIG_USE_MACADDR0 |				//which MAC address to use
@@ -115,8 +192,8 @@ void networking_init(uint32_t sysClkFreq) {
 		EMAC_CONFIG_BO_LIMIT_1024,				//range limit for random delay after collision
 		EMAC_MODE_RX_STORE_FORWARD |			//wait for a full frame in fifo to DMA it
 		EMAC_MODE_TX_STORE_FORWARD |		  // same as ^
-		EMAC_MODE_TX_THRESHOLD_64_BYTES | //how full the TX fifo needs to be to begin a DMA transfer
-		EMAC_MODE_RX_THRESHOLD_64_BYTES,  //how full the RX fifo needs to be to begin a DMA transfer
+		EMAC_MODE_TX_THRESHOLD_128_BYTES | //how full the TX fifo needs to be to begin a DMA transfer
+		EMAC_MODE_RX_THRESHOLD_128_BYTES,  //how full the RX fifo needs to be to begin a DMA transfer
 		0																	//max frame size
 	);
 	
@@ -151,13 +228,13 @@ void networking_init(uint32_t sysClkFreq) {
 	EMACAddrSet(EMAC0_BASE, 0, (uint8_t*) mac_addr);
 	
 	//wait for the PHY to report link up
-	debug_print("waiting link..\r\n");
-	 while((EMACPHYRead(EMAC0_BASE, 0, EPHY_BMSR) & EPHY_BMSR_LINKSTAT) == 0) {} 
-	debug_print("Link up!!1\r\n");
+//	debug_print("waiting link..\r\n");
+//	 while((EMACPHYRead(EMAC0_BASE, 0, EPHY_BMSR) & EPHY_BMSR_LINKSTAT) == 0) {} 
+//	debug_print("Link up!!1\r\n");
 	
-	//set up the MAC incoming frame filter
+	//set up the MAC xmit frame filter
 	EMACFrameFilterSet(EMAC0_BASE, 
-		 EMAC_FRMFILTER_SADDR |						//drop frames when the source address field doesn't match SA registers
+		 EMAC_FRMFILTER_SADDR |						//rename xmit frames when the source address field doesn't match SA registers
 		 EMAC_FRMFILTER_PASS_MULTICAST |  //pass all multicast frames
 		 EMAC_FRMFILTER_PASS_NO_CTRL			//don't pass any control frames
 	);
@@ -198,99 +275,72 @@ void networking_init(uint32_t sysClkFreq) {
 	//initialize uip arp
 	uip_arp_init();
 	
+	//initialize uip timers
+	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 2); //set uIP TCP periodic timer for 500ms
+	timer_set(&arp_timer_for_uip, CLOCK_SECOND * 10);     //set uIP ARP timer for 10s
+	
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)
 	rxDescriptor[0].ui32CtrlStatus = DES0_RX_CTRL_OWN;
 	
-	debug_print("net.c init dun!\r\n");
+	//start our UDP listen
+	uip_ipaddr_t listen_addr;
+	uip_ipaddr(&listen_addr, 0, 0, 0, 0);
+	udp_socket = uip_udp_new(&listen_addr, 0); //make remote port 0 for listen
+	uip_udp_bind(udp_socket, HTONS(UDP_PORT));
+	
+	debug_print("networking.c init complete!\r\n");
 }
 
 void networking_periodic() {
 	//handle a received ethernet frame
 	if(rx_flag) {
-		debug_print("eth rx\r\n");
-		
-		//copy rx data out of the DMA buffer
-		
-		//make sure we own the dma thing
-		if(!(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_CTRL_OWN)) {
-			
-			//check if it contains a valid packet (it'll have error bit set if it's truncated, or if last frame in pkt
-			if(!(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_ERR)) {
-				
-				//make sure it's the "last descriptor" (it always should be, because the DMA buffer should be bigger than the biggest 
-				//possible eth frame
-				if(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_LAST_DESC) {
-					uint32_t frame_len = (rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_STAT_FRAME_LENGTH_M) >> DES0_RX_STAT_FRAME_LENGTH_S;
-
-					//copy packet from DMA buffer into uIP buffer
-					for(uint16_t i=0; i < frame_len; i++) {
-						uip_buf[i] = rx_buffer[i];
-					}
-					uip_len = frame_len;
-					
-					//look @ header
-					struct uip_eth_hdr *pkt_header = (struct uip_eth_hdr *) uip_buf;
-					
-					if(pkt_header->type == htons(UIP_ETHTYPE_IP)) {
-						//it's an IP packet!
-						debug_print("\tIP!\r\n");
-						uip_arp_ipin();
-
-						uip_input();
-						
-						//if uIP generated output, send it
-						if(uip_len > 0) transmit_ethernet_frame();
-						uip_len = 0;
-						
-					} else if (pkt_header->type == htons(UIP_ETHTYPE_ARP)) {
-						//it's an ARP packet!
-						debug_print("\tARP!\r\n");
-					
-						uip_arp_arpin();
-						
-						//if uIP generated output, send it
-						if(uip_len > 0) transmit_ethernet_frame();
-						uip_len = 0;
-						
-					} else if (pkt_header->type == htons(UIP_ETHTYPE_IP6)) {
-						debug_print("\tIPv6!\r\n");
-					}
-					
-				} else {
-					debug_print("dmaNotLast!\r\n");
-					while(1);
-				}
-			} else {
-				debug_print("dmaRxDescErr!\r\n");
-				while(1);
-			}
-			
-			//move on to the next DMA descriptor in the chain
-			active_rx_desc++;
-			if(active_rx_desc == 3) active_rx_desc = 0;
-			
-			//give the new active DMA descriptor to the MAC
-			rxDescriptor[active_rx_desc].ui32CtrlStatus = DES0_RX_CTRL_OWN;
-			
-		} else {
-				debug_print("don't own dma!\r\n");
-				while(1);
-		}
+		receive_ethernet_frame();
 		rx_flag = false;
 	}
 	
 	if(tx_complete_flag) {
-		debug_print("\ttx c flag\r\n");
 		tx_complete_flag = false;
 	}
+	
+	if(timer_expired(&periodic_timer_for_uip)) {
+		timer_reset(&periodic_timer_for_uip);
+		
+		//update TCP connections
+		for(uint16_t i=0; i<UIP_CONNS; i++) {
+			uip_periodic(i);
+		}
+		
+		//update UDP connections
+		for(uint16_t i=0; i < UIP_UDP_CONNS; i++) {
+			uip_udp_periodic(i);
+		}
+		
+		if(uip_len > 0) {
+			uip_arp_out();
+			transmit_ethernet_frame();
+		}
+	}
+	
+	if(timer_expired(&arp_timer_for_uip)) {
+		timer_reset(&arp_timer_for_uip);
+		uip_arp_timer();
+	}
+	
 }
 
+//called by uIP during networking_periodic when it has something to tell us
 void uip_appcall() {
 	debug_print("uip_appcall!!\r\n");
 }
 
+//called by uIP during networking_periodic when it has something to tell us
 void uip_udp_appcall() {
-	debug_print("UDP appcall!\r\n");
+	
+	//check for new data in our sockets
+	if(uip_newdata()) {
+		uint32_t len = uip_len;
+	}
+	
 }
 
 void tcpip_output() {
@@ -299,6 +349,28 @@ void tcpip_output() {
 
 //function called by uIP to get clock time
 uint32_t clock_time() {
-	return 624;
+	return systick_clock;
 }
+
+void uip_log(char* str) {
+	debug_print("UIP: ");
+	debug_print(str);
+	debug_print("\r\n");
+}
+
+//fake values because HW calcs checksums for us
+// not working...
+/*
+uint16_t uip_ipchksum() {
+	return 0x624;
+}
+
+uint16_t uip_tcpchksum() {
+	return 0x624;
+}
+
+uint16_t uip_chksum(uint16_t *buf, uint16_t len) {
+	return 0x624;
+}
+*/
 

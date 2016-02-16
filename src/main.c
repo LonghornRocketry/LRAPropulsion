@@ -12,8 +12,10 @@
 
 #include "debug.h"
 #include "networking.h"
+#include "main.h"
 
 bool led_on = false;
+volatile uint32_t systick_clock = 0;
 void sys_tick() {
 	if (led_on) {
 		GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0);
@@ -21,6 +23,7 @@ void sys_tick() {
 		GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
 	}
   led_on = !led_on;
+	systick_clock++;
 }
 
 
@@ -48,15 +51,16 @@ int main(void)
 	GPIOPinConfigure(GPIO_PF0_EN0LED0);
 	GPIOPinConfigure(GPIO_PF4_EN0LED1);
 	GPIOPinTypeEthernetLED(GPIO_PORTF_BASE, GPIO_PIN_0 | GPIO_PIN_4);
-  
-	// Set up the SysTick timer and its interrupts
-	SysTickPeriodSet(10000000);
-	SysTickIntRegister(sys_tick);
-	SysTickIntEnable();
-	SysTickEnable(); 
+ 
 	
 	debug_init(sysClkFreq);
 	networking_init(sysClkFreq);
+	
+	// Set up the SysTick timer and its interrupts
+	SysTickPeriodSet(120000);
+	SysTickIntRegister(sys_tick);
+	SysTickIntEnable();
+	SysTickEnable(); 
 	
 	while(1) {
 		networking_periodic();
