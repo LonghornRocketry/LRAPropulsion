@@ -1,6 +1,0 @@
-build/*
-*.bak
-*.lst
-*.i
-*.build_log.htm
-*.uvgui.*

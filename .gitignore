@@ -4,3 +4,5 @@ build/*
 *.i
 *.build_log.htm
 *.uvgui.*
+*.aliases
+*.lvlps
