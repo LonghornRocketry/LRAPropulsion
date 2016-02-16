@@ -5,6 +5,7 @@
 #include "networking.h"
 #include "debug.h"
 #include "main.h"
+#include "packet_receiver.h"
 
 #include "driverlib/sysctl.h"
 #include "driverlib/emac.h"
@@ -55,7 +56,11 @@ void ethernet_interrupt_handler() {
 
 static void transmit_ethernet_frame() {
 	
-	//wait until we own the tx descriptor
+	//wait until we own the tx descriptor.
+	//is this a bad idea? maybe isntead just drop the frame...
+	//but in that case, is one run of the event loop happens to generate multiple packets
+	//then bad things will happen.......
+	// instead, queue and wait for tx complete? something else? /shrug
 	while(txDescriptor[active_tx_desc].ui32CtrlStatus & DES0_TX_CTRL_OWN) {};
 		
 	if(uip_len > TX_BUFFER_SIZE) uip_len = TX_BUFFER_SIZE;
@@ -241,8 +246,6 @@ void networking_init(uint32_t sysClkFreq) {
 	
 	//clear pending MAC interrupts
 	EMACIntClear(EMAC0_BASE, EMACIntStatus(EMAC0_BASE, false));
-	
-	// <!! -- INITUALIZE uIP -- !!>
 		 
 	//enable MAC transmitter and receiver
 	EMACTxEnable(EMAC0_BASE);
@@ -338,7 +341,7 @@ void uip_udp_appcall() {
 	
 	//check for new data in our sockets
 	if(uip_newdata()) {
-		uint32_t len = uip_len;
+		process_packet((uint8_t*) uip_appdata, uip_len);
 	}
 	
 }
