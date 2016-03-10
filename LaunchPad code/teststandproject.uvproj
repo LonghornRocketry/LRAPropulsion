@@ -481,29 +481,14 @@
               <FilePath>.\src\debug.c</FilePath>
             </File>
             <File>
-              <FileName>networking.c</FileName>
+              <FileName>network_driver.c</FileName>
               <FileType>1</FileType>
-              <FilePath>.\src\networking.c</FilePath>
-            </File>
-            <File>
-              <FileName>debug.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\debug.h</FilePath>
-            </File>
-            <File>
-              <FileName>networking.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\networking.h</FilePath>
+              <FilePath>.\src\network_driver.c</FilePath>
             </File>
             <File>
               <FileName>packet_receiver.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\src\packet_receiver.c</FilePath>
-            </File>
-            <File>
-              <FileName>packet_receiver.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\packet_receiver.h</FilePath>
             </File>
             <File>
               <FileName>telemetry.c</FileName>
@@ -516,9 +501,9 @@
               <FilePath>.\src\transducer.c</FilePath>
             </File>
             <File>
-              <FileName>telemetry.h</FileName>
-              <FileType>5</FileType>
-              <FilePath>.\src\telemetry.h</FilePath>
+              <FileName>networking.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\src\networking.c</FilePath>
             </File>
           </Files>
         </Group>

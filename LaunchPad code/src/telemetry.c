@@ -7,25 +7,35 @@
 #include "debug.h"
 #include "main.h"
 
-uint8_t remote_ip[4] = {10, 0, 0, 1};
-
-bool telemetry_new_packet;
-telem_packet_t telemetry_packet;
-struct uip_udp_conn* telemetry_udp_conn;
+bool new_packet = false;
+telemetry_packet_t packet;
 
 void telemetry_init() {
-	telemetry_udp_conn = uip_udp_new((void*) remote_ip, HTONS(6240));
 	debug_print("telemetry_init() complete!\r\n");
 }
 
 void telemetry_periodic() {
-	
-	if(telemetry_new_packet) {
-		// networking hasn't picked up our last packet yet... ;_;
-	} else {
-		telemetry_packet.timestamp = systick_clock;
-		memcpy(telemetry_packet.transducer_val, transducer_val,  sizeof(transducer_val));
-		telemetry_new_packet = true;
+	// TODO: implement this as a timer
+	if(!new_packet) {
+		
+		//build a new packet
+		packet.timestamp = systick_clock;
+		memcpy(packet.transducer_val, transducer_val, sizeof(transducer_val));
+		
+		//queue it up for sending
+		new_packet = true;
+		
 	}
+}
+
+bool telemetry_new_packet() {
+	return new_packet;
+}
+
+telemetry_packet_t* telemetry_get_packet() {
+	
+	//mark the packet as sent
+	new_packet = false;
+	return &packet;
 	
 }

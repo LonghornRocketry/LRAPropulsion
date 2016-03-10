@@ -2,7 +2,7 @@
 #define __UIP_CONF_H__
 	
 	#include <stdint.h>
-	#include "src/networking.h"
+	#include "src/network_driver.h"
 	
 	//CLOCK-RELATED SETTINGS ARE IN clock-arch.h!!
 	

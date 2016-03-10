@@ -11,7 +11,7 @@
 #include "inc/hw_ints.h"
 
 #include "debug.h"
-#include "networking.h"
+#include "network_driver.h"
 #include "transducer.h"
 #include "telemetry.h"
 #include "main.h"
@@ -56,7 +56,7 @@ int main(void)
  
 	
 	debug_init(sysClkFreq);
-	networking_init(sysClkFreq);
+	network_driver_init(sysClkFreq);
 	telemetry_init();
 	transducer_init();
 	
@@ -67,7 +67,7 @@ int main(void)
 	SysTickEnable(); 
 	
 	while(1) {
-		networking_periodic();
+		network_driver_periodic();
 		transducer_periodic();
 		telemetry_periodic();
 	}

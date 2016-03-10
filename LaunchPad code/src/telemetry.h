@@ -9,13 +9,11 @@ struct telemetry_packet {
 	uint16_t transducer_val[4];
 };
 
-typedef struct telemetry_packet telem_packet_t;
-
-extern bool telemetry_new_packet;
-extern telem_packet_t telemetry_packet;
-extern struct uip_udp_conn* telemetry_udp_conn;
+typedef struct telemetry_packet telemetry_packet_t;
 
 void telemetry_init(void);
 void telemetry_periodic(void);
+bool telemetry_new_packet(void);
+telemetry_packet_t* telemetry_get_packet(void);
 
 #endif /*TELEMETRY_H*/
