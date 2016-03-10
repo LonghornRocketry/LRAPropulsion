@@ -39,8 +39,8 @@ void debug_init(uint32_t sysClkFreq) {
 	TimerConfigure(TIMER0_BASE, TIMER_CFG_PERIODIC_UP);
 	TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM); //internal 16 MHz clock
 	TimerEnable(TIMER0_BASE, TIMER_BOTH);
-	
-	debug_print("debug.c init complete!\r\n");
+
+	debug_print("\r\n\r\n----------\r\n\r\ndebug.c init complete!\r\n");
 }
 
 void debug_print(char* str) {
@@ -63,9 +63,25 @@ void debug_print_mac(uint8_t* mac) {
 	debug_print(buf);
 }
 
+void debug_print_ip(uint8_t* ip) {
+	char buf[20];
+	snprintf(buf, 20, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+	debug_print(buf);
+}
+
+void debug_delay_us(uint32_t val) {
+	uint32_t start = debug_clock_us();
+	while((debug_clock_us() - start) < val) {}
+}
+
 uint32_t debug_clock_us() 
 {
 	return (TimerValueGet(TIMER0_BASE, TIMER_A) / 120); //divide 120 MHz timer by 120 to get 1 MHz
+}
+
+uint32_t debug_clock_cycles()
+{
+	return TimerValueGet(TIMER0_BASE, TIMER_A);
 }
 
 

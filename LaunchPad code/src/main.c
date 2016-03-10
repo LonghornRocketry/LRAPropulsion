@@ -12,6 +12,8 @@
 
 #include "debug.h"
 #include "networking.h"
+#include "transducer.h"
+#include "telemetry.h"
 #include "main.h"
 
 bool led_on = false;
@@ -55,14 +57,18 @@ int main(void)
 	
 	debug_init(sysClkFreq);
 	networking_init(sysClkFreq);
+	telemetry_init();
+	transducer_init();
 	
 	// Set up the SysTick timer and its interrupts
-	SysTickPeriodSet(120000);
+	SysTickPeriodSet(120000); // 1 kHz
 	SysTickIntRegister(sys_tick);
 	SysTickIntEnable();
 	SysTickEnable(); 
 	
 	while(1) {
 		networking_periodic();
+		transducer_periodic();
+		telemetry_periodic();
 	}
 }

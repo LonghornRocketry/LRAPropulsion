@@ -6,6 +6,7 @@
 #include "debug.h"
 #include "main.h"
 #include "packet_receiver.h"
+#include "telemetry.h"
 
 #include "driverlib/sysctl.h"
 #include "driverlib/emac.h"
@@ -58,7 +59,7 @@ static void transmit_ethernet_frame() {
 	
 	//wait until we own the tx descriptor.
 	//is this a bad idea? maybe isntead just drop the frame...
-	//but in that case, is one run of the event loop happens to generate multiple packets
+	//but in that case, if one run of the event loop happens to generate multiple packets
 	//then bad things will happen.......
 	// instead, queue and wait for tx complete? something else? /shrug
 	while(txDescriptor[active_tx_desc].ui32CtrlStatus & DES0_TX_CTRL_OWN) {};
@@ -265,6 +266,10 @@ void networking_init(uint32_t sysClkFreq) {
 	uip_ipaddr(ipaddr, IPADDR0, IPADDR1, IPADDR2, IPADDR3);
 	uip_sethostaddr(ipaddr);
 	
+	debug_print("Set up uIP host addr: ");
+	debug_print_ip((void*)&ipaddr);
+	debug_print("\r\n");
+	
 	//set uip's mac address for ARP
 	struct uip_eth_addr temp_addr;
 	temp_addr.addr[0] = mac_addr[0];
@@ -279,7 +284,7 @@ void networking_init(uint32_t sysClkFreq) {
 	uip_arp_init();
 	
 	//initialize uip timers
-	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 2); //set uIP TCP periodic timer for 500ms
+	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 20); //set uIP TCP/UDP poll timer for 50ms
 	timer_set(&arp_timer_for_uip, CLOCK_SECOND * 10);     //set uIP ARP timer for 10s
 	
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)
@@ -296,7 +301,7 @@ void networking_init(uint32_t sysClkFreq) {
 
 void networking_periodic() {
 	//handle a received ethernet frame
-	if(rx_flag) {
+	if(rx_flag) { 
 		receive_ethernet_frame();
 		rx_flag = false;
 	}
@@ -311,18 +316,22 @@ void networking_periodic() {
 		//update TCP connections
 		for(uint16_t i=0; i<UIP_CONNS; i++) {
 			uip_periodic(i);
+			if(uip_len > 0) {
+				uip_arp_out();
+				transmit_ethernet_frame();
+			}
 		}
 		
-		//update UDP connections
+		//update UDP connections, looking for data to send.
+		//This caused an appcall() with uip_poll()
 		for(uint16_t i=0; i < UIP_UDP_CONNS; i++) {
 			uip_udp_periodic(i);
+			if(uip_len > 0) {
+				uip_arp_out();
+				transmit_ethernet_frame();
+			}
 		}
-		
-		if(uip_len > 0) {
-			uip_arp_out();
-			transmit_ethernet_frame();
-		}
-	}
+}
 	
 	if(timer_expired(&arp_timer_for_uip)) {
 		timer_reset(&arp_timer_for_uip);
@@ -342,6 +351,15 @@ void uip_udp_appcall() {
 	//check for new data in our sockets
 	if(uip_newdata()) {
 		process_packet((uint8_t*) uip_appdata, uip_len);
+	}
+	
+	//check if uIP is polling a UDP connection for data
+	if(uip_poll()) {
+		if(uip_udp_conn == telemetry_udp_conn) {
+			memcpy(uip_appdata, &telemetry_packet, sizeof(telemetry_packet));
+			uip_udp_send(sizeof(telemetry_packet));
+			telemetry_new_packet = false;
+		}
 	}
 	
 }
