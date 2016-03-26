@@ -7,5 +7,6 @@
 #define SYSTICK_FREQ 1000
 
 extern volatile uint32_t systick_clock;
+extern volatile uint32_t loops_per_second;
 
 #endif /*MAIN_H*/

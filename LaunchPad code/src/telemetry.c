@@ -21,7 +21,7 @@ void telemetry_periodic() {
 		//build a new packet
 		packet.timestamp = systick_clock;
 		memcpy(packet.transducer_val, transducer_val, sizeof(transducer_val));
-		
+		packet.loops_per_second = loops_per_second;
 		//queue it up for sending
 		new_packet = true;
 		

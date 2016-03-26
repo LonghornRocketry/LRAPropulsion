@@ -7,6 +7,7 @@
 struct telemetry_packet {
 	uint32_t timestamp;
 	uint16_t transducer_val[4];
+	uint32_t loops_per_second;
 };
 
 typedef struct telemetry_packet telemetry_packet_t;

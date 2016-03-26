@@ -66,9 +66,17 @@ int main(void)
 	SysTickIntEnable();
 	SysTickEnable(); 
 	
+	uint32_t loopIterations = 0;
+	uint32_t frame_start = systick_clock;
 	while(1) {
 		network_driver_periodic();
 		transducer_periodic();
 		telemetry_periodic();
+		loopIterations++;
+		if(systick_clock - frame_start >= 1000) {
+			loops_per_second = loopIterations;
+			loopIterations = 0;
+			frame_start = systick_clock;
+		}
 	}
 }
