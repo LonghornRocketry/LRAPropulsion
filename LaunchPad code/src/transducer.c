@@ -81,7 +81,7 @@ void transducer_init() {
 	
 	clear_receive_fifo();
 	
-		debug_print("transducer_init() complete!\r\n");
+		debug_print("transducer_init() complete\r\n");
 }
 
 static uint16_t do_adc_read() {

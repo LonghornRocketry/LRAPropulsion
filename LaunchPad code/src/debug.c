@@ -40,7 +40,7 @@ void debug_init(uint32_t sysClkFreq) {
 	TimerClockSourceSet(TIMER0_BASE, TIMER_CLOCK_SYSTEM); //internal 16 MHz clock
 	TimerEnable(TIMER0_BASE, TIMER_BOTH);
 
-	debug_print("\r\n\r\n----------\r\n\r\ndebug.c init complete!\r\n");
+	debug_print("\r\n\r\n----------\r\n\r\ndebug_init() complete\r\n");
 }
 
 void debug_print(char* str) {

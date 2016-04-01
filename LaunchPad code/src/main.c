@@ -12,9 +12,13 @@
 
 #include "debug.h"
 #include "network_driver.h"
+#include "networking.h"
 #include "transducer.h"
 #include "telemetry.h"
+#include "thermocouple.h"
 #include "main.h"
+
+volatile uint32_t loops_per_second;
 
 bool led_on = false;
 volatile uint32_t systick_clock = 0;
@@ -57,8 +61,10 @@ int main(void)
 	
 	debug_init(sysClkFreq);
 	network_driver_init(sysClkFreq);
+	networking_init();
 	telemetry_init();
 	transducer_init();
+	thermocouple_init();
 	
 	// Set up the SysTick timer and its interrupts
 	SysTickPeriodSet(120000); // 1 kHz
@@ -72,6 +78,8 @@ int main(void)
 		network_driver_periodic();
 		transducer_periodic();
 		telemetry_periodic();
+		thermocouple_periodic();
+		
 		loopIterations++;
 		if(systick_clock - frame_start >= 1000) {
 			loops_per_second = loopIterations;

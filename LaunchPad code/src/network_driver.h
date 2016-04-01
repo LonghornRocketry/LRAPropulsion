@@ -18,8 +18,6 @@
 #define TX_BUFFER_SIZE 1536
 #define RX_BUFFER_SIZE 1536
 
-#define UDP_PORT 6240
-
 void network_driver_init(uint32_t sysClkFreq);
 void network_driver_periodic(void);
 

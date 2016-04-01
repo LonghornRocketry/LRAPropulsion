@@ -290,7 +290,7 @@ void network_driver_init(uint32_t sysClkFreq) {
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)
 	rxDescriptor[0].ui32CtrlStatus = DES0_RX_CTRL_OWN;
 	
-	debug_print("network_driver_init() complete!\r\n");
+	debug_print("network_driver_init() complete\r\n");
 }
 
 void network_driver_periodic() {

@@ -11,7 +11,7 @@ bool new_packet = false;
 telemetry_packet_t packet;
 
 void telemetry_init() {
-	debug_print("telemetry_init() complete!\r\n");
+	debug_print("telemetry_init() complete\r\n");
 }
 
 void telemetry_periodic() {
@@ -20,7 +20,10 @@ void telemetry_periodic() {
 		
 		//build a new packet
 		packet.timestamp = systick_clock;
-		memcpy(packet.transducer_val, transducer_val, sizeof(transducer_val));
+		for(int i=0; i<4; i++) {
+			packet.transducer_val[i] = transducer_val[i];
+		}
+		memcpy(&packet.tc_data, &tc_data, sizeof(tc_data));
 		packet.loops_per_second = loops_per_second;
 		//queue it up for sending
 		new_packet = true;

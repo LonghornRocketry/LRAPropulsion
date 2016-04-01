@@ -21,10 +21,12 @@ void networking_init() {
 	uip_ipaddr_t listen_addr;
 	uip_ipaddr(&listen_addr, 0, 0, 0, 0);
 	packet_receive_conn = uip_udp_new(&listen_addr, 0); //make remote port 0 for listen
-	uip_udp_bind(packet_receive_conn, HTONS(UDP_PORT));
+	uip_udp_bind(packet_receive_conn, HTONS(remote_port));
 	
 	//open UDP socket for sending telemetry
 	telemetry_send_conn = uip_udp_new((void*) remote_ip, HTONS(remote_port));
+	
+	debug_print("networking_init() complete\r\n");
 }
 
 //called by uIP during networking_periodic when it has something to tell us
