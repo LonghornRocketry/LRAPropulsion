@@ -11,11 +11,13 @@
 #include "inc/hw_ints.h"
 
 #include "debug.h"
+#include "status_led.h"
 #include "network_driver.h"
 #include "networking.h"
 #include "transducer.h"
 #include "telemetry.h"
 #include "thermocouple.h"
+#include "solenoid.h"
 #include "main.h"
 
 /*
@@ -26,7 +28,14 @@ Pin Mappings: https://docs.google.com/spreadsheets/d/1FLoMdekCKLfGqCLHUICYdZ5XRL
 
 */
 
+//global variable to store tick rate (in Hz) of main loop
 volatile uint32_t loops_per_second;
+
+//global variable containing master arm state ("are solenoids enabled"?)
+volatile uint8_t stand_armed;
+
+//global variable containing commanded solenoid sattes
+volatile uint16_t solenoid_state;
 
 bool led_on = false;
 volatile uint32_t systick_clock = 0;
@@ -45,34 +54,16 @@ int main(void)
 {
 	// Set the system clock to the full 120MHz
 	uint32_t sysClkFreq = SysCtlClockFreqSet(SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480, 120000000);
-	
-	// Enable the GPIO port that is used for the on-board LED.
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPION);
-	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOF);
-
-	// Check if the peripheral access is enabled.
-	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPION))
-	{
-	}
-	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOF))
-	{
-	}
-
-	GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_0);
-	GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_1);
-	
-	//configure the two PORTF LEDs as ethernet indicators
-	GPIOPinConfigure(GPIO_PF0_EN0LED0);
-	GPIOPinConfigure(GPIO_PF4_EN0LED1);
-	GPIOPinTypeEthernetLED(GPIO_PORTF_BASE, GPIO_PIN_0 | GPIO_PIN_4);
  
 	
 	debug_init(sysClkFreq);
+	status_led_init();
 	network_driver_init(sysClkFreq);
 	networking_init();
 	telemetry_init();
 	transducer_init();
 	thermocouple_init();
+	solenoid_init();
 	
 	// Set up the SysTick timer and its interrupts
 	SysTickPeriodSet(120000); // 1 kHz
@@ -83,16 +74,20 @@ int main(void)
 	uint32_t loopIterations = 0;
 	uint32_t frame_start = systick_clock;
 	while(1) {
+		status_led_periodic();
 		network_driver_periodic();
 		transducer_periodic();
 		telemetry_periodic();
 		thermocouple_periodic();
+		solenoid_periodic();
 		
+		//count loop iterations per second
 		loopIterations++;
 		if(systick_clock - frame_start >= 1000) {
 			loops_per_second = loopIterations;
 			loopIterations = 0;
 			frame_start = systick_clock;
 		}
+		
 	}
 }

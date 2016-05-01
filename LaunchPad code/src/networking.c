@@ -40,13 +40,14 @@ void uip_udp_appcall() {
 	//check for new data in our sockets
 	if(uip_newdata()) {
 		if(uip_udp_conn == packet_receive_conn) {
+			//we got a packet! process it!
 			process_packet((uint8_t*) uip_appdata, uip_len);
 		}
 	}
 	
 	//check if uIP is polling a UDP connection for data
 	if(uip_poll()) {
-		//poll telemetry for a new packet to send
+		//poll telemetry.c for a new packet to send
 		if(uip_udp_conn == telemetry_send_conn && telemetry_new_packet()) {
 			telemetry_packet_t *packet = telemetry_get_packet();
 			memcpy(uip_appdata, packet, sizeof(telemetry_packet_t));

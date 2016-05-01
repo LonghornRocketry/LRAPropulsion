@@ -11,6 +11,8 @@ __packed struct telemetry_packet {
 	uint16_t transducer_val[4];
 	uint32_t loops_per_second;
 	tc_data_t tc_data;
+	uint8_t stand_armed;
+	uint16_t solenoid_state;
 };
 
 typedef struct telemetry_packet telemetry_packet_t;

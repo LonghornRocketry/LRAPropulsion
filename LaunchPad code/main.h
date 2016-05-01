@@ -9,4 +9,7 @@
 extern volatile uint32_t systick_clock;
 extern volatile uint32_t loops_per_second;
 
+extern volatile uint8_t stand_armed;
+extern volatile uint16_t solenoid_state;
+
 #endif /*MAIN_H*/

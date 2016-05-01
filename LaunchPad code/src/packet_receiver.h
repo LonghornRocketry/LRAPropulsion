@@ -14,8 +14,9 @@
 
 #define PACKET_BASIC 0
 
-struct packet_basic {
-	uint8_t led0;
+__packed struct packet_basic {
+	uint8_t stand_arm;
+	uint16_t solenoid_states;
 };
 
 void process_packet(uint8_t* data, uint16_t len);

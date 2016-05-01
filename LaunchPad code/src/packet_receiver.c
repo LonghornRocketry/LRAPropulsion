@@ -1,6 +1,7 @@
 #include <stdbool.h>
 
 #include "packet_receiver.h"
+#include "main.h"
 #include "debug.h"
 
 #include "driverlib/gpio.h"
@@ -15,16 +16,13 @@ void process_packet(uint8_t* data, uint16_t len) {
 	if(type == PACKET_BASIC) {
 		
 		if (len != sizeof(struct packet_basic)) {
-			debug_print("wrong packet size");
+			debug_print("packet_receiver.c: wrong packet size!\r\n");
 		}
 		
 		struct packet_basic *pkt = (struct packet_basic *) data;
 		
-		if (pkt->led0) {
-			GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
-		} else {
-			GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, 0);
-		}
+		stand_armed = pkt->stand_arm;
+		solenoid_state = pkt->solenoid_states;
 		
 	} else {
 		debug_print("packet_receiver got unknown packet type: ");

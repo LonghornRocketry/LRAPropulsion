@@ -82,20 +82,5 @@ void thermocouple_periodic() {
 	tc_data.short_to_vcc = (data >> 2) & 0x1;
 	tc_data.short_to_gnd = (data >> 1) & 0x1;
 	tc_data.open_circuit = (data >> 0) & 0x1;
-	
-
-		debug_print("TC VAL: ");
-		debug_print_u32(tc_data.tc_val);
-		debug_print("\r\nINT TEMP: ");
-		debug_print_u32(tc_data.internal_temp);
-		debug_print("\r\nFAULT: ");
-		debug_print_u32(tc_data.fault);
-		debug_print("\r\nSHORT_VCC: ");
-		debug_print_u32(tc_data.short_to_vcc);
-		debug_print("\r\nSHORT_GND: ");
-		debug_print_u32(tc_data.short_to_gnd);
-		debug_print("\r\nOPEN_CIRCUIT: ");
-		debug_print_u32(tc_data.open_circuit);
-		debug_print("\r\n\r\n");
 
 }
