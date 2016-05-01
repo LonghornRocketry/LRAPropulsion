@@ -18,6 +18,14 @@
 #include "thermocouple.h"
 #include "main.h"
 
+/*
+
+LRA Propulsion Test Stand
+
+Pin Mappings: https://docs.google.com/spreadsheets/d/1FLoMdekCKLfGqCLHUICYdZ5XRLgRkgJR3m1h6rutWZc/edit#gid=0
+
+*/
+
 volatile uint32_t loops_per_second;
 
 bool led_on = false;
