@@ -5,6 +5,7 @@
 #include "driverlib/sysctl.h"
 #include "driverlib/pin_map.h"
 #include "inc/hw_memmap.h"
+#include "inc/tm4c1294ncpdt.h"
 
 #include "status_led.h"
 
@@ -43,12 +44,11 @@ void status_led_init() {
 	
 	// congigure the RGB LED ports as outputs
 	GPIOPinTypeGPIOOutput(GPIO_PORTN_BASE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4);
-		
 	// gimme mo power
 	GPIOPadConfigSet(GPIO_PORTN_BASE, GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4, GPIO_STRENGTH_8MA, GPIO_PIN_TYPE_STD);
 }
 
 void status_led_periodic() {
-	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_2, GPIO_PIN_2);
+	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_4|GPIO_PIN_3, GPIO_PIN_4|GPIO_PIN_3);
 	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
 }

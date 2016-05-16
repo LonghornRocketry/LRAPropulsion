@@ -23,6 +23,8 @@ SOL 6  - PK6
 SOL 7  - PK7
 SOL 8  - PL0
 SOL 9  - PL1
+
+SOL PWR SENSE (input) - PC7
 */
 
 static volatile bool solenoids_enabled = false;
@@ -36,6 +38,13 @@ void solenoid_init() {
 	// Enable GPIO Port L clock
 	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOL);
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOL)){};
+	
+	// Enable GPIO Port C clock
+	SysCtlPeripheralEnable(SYSCTL_PERIPH_GPIOC);
+	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_GPIOC)){};
+		
+	// Configure PC7 as an input
+	GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_7);
 	
 }
 
@@ -75,4 +84,8 @@ void solenoid_periodic() {
 	} else {
 		disable_solenoids();
 	}
+}
+
+bool are_solenoids_powered() {
+	return GPIOPinRead(GPIO_PORTC_BASE, GPIO_PIN_7);
 }

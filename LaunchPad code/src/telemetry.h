@@ -12,6 +12,7 @@ __packed struct telemetry_packet {
 	uint32_t loops_per_second;
 	tc_data_t tc_data;
 	uint8_t stand_armed;
+	uint8_t solenoids_powered;
 	uint16_t solenoid_state;
 };
 

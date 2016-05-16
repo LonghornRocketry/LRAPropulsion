@@ -4,6 +4,7 @@
 
 #include "telemetry.h"
 #include "transducer.h"
+#include "solenoid.h"
 #include "debug.h"
 #include "main.h"
 
@@ -27,6 +28,7 @@ void telemetry_periodic() {
 		memcpy(&packet.tc_data, &tc_data, sizeof(tc_data));
 		packet.loops_per_second = loops_per_second;
 		packet.stand_armed = stand_armed;
+		packet.solenoids_powered = are_solenoids_powered();
 		packet.solenoid_state = solenoid_state;
 		
 		//queue it up for sending
