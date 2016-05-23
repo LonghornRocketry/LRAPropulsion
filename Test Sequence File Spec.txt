@@ -1,0 +1,11 @@
+Each test sequence will be in the form of a CSV file, broken up into a series of valve actions with the following columns:
+
+1. Time (ms)
+2. Valve 
+3. Action
+
+Rows should be in time order, and no time values should all be positive.
+
+Valves are specified by number (could be changed to specifier.)
+
+Action is the string "OPEN" or "CLOSE".
