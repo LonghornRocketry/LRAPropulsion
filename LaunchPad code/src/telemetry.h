@@ -7,14 +7,26 @@
 #include "thermocouple.h"
 
 __packed struct telemetry_packet {
-	uint32_t timestamp;
-	uint16_t transducer_val[4];
-	uint32_t loops_per_second;
-	tc_data_t tc_data;
+	
+	//diagnostic info
+	uint32_t timestamp;					//ms, time since poweron
+	uint32_t mainloop_rate;			//Hz
+	uint32_t transducer_rate;		//Hz
+	uint32_t transducer_time;   //uS, time spent total for last ISR execution
+	uint32_t thermocouple_rate; //Hz
+	uint32_t thermocouple_time; //uS, time spent total for last ISR execution
+	
+	//status info
 	uint8_t stand_armed;
 	uint8_t solenoids_powered;
 	uint16_t solenoid_state;
+	
+	//sensor data
+	uint16_t transducer_val[16];
+	tc_data_t tc_data[5];
+	
 };
+
 
 typedef struct telemetry_packet telemetry_packet_t;
 

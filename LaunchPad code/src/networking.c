@@ -29,12 +29,12 @@ void networking_init() {
 	debug_print("networking_init() complete\r\n");
 }
 
-//called by uIP during networking_periodic when it has something to tell us
+//called by uIP during networking_periodic when it has something to tell us about TCP stuff
 void uip_appcall() {
 	debug_print("uip_appcall!!\r\n");
 }
 
-//called by uIP during networking_periodic when it has something to tell us
+//called by uIP during networking_periodic when it has something to tell us about UDP stuff
 void uip_udp_appcall() {
 	
 	//check for new data in our sockets

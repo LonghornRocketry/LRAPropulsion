@@ -37,16 +37,22 @@ volatile uint8_t stand_armed;
 //global variable containing commanded solenoid sattes
 volatile uint16_t solenoid_state;
 
-bool led_on = false;
+//1 kHz counter
 volatile uint32_t systick_clock = 0;
+
+// This runs off the 1 KHz SysTick timer. It is used to schedule
+// timed actions.
 void sys_tick() {
-	if (led_on) {
-		GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, 0);
-	} else {
-		GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_0, GPIO_PIN_0);
-	}
-  led_on = !led_on;
 	systick_clock++;
+	
+	// run TC reads at 500 Hz (this is divided among TCs so each will get 100 Hz)
+	// 500 Hz @ 1KHz clock = every other clock
+	if(systick_clock % 2 == 0) {
+		thermocouple_start_next_transaction();
+	}
+	
+	// run transducer reads at 1 KHz (TODO: make the rate WAY bigger)
+	transducer_periodic();
 }
 
 
@@ -65,6 +71,8 @@ int main(void)
 	thermocouple_init();
 	solenoid_init();
 	
+	debug_print("Initialization complete. starting main loop.\r\n");
+	
 	// Set up the SysTick timer and its interrupts
 	SysTickPeriodSet(120000); // 1 kHz
 	SysTickIntRegister(sys_tick);
@@ -73,12 +81,13 @@ int main(void)
 	
 	uint32_t loopIterations = 0;
 	uint32_t frame_start = systick_clock;
+	
+
+	
 	while(1) {
 		status_led_periodic();
 		network_driver_periodic();
-		transducer_periodic();
 		telemetry_periodic();
-		thermocouple_periodic();
 		solenoid_periodic();
 		
 		//count loop iterations per second

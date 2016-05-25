@@ -21,8 +21,22 @@
 //    Mux 2   PH2
 //    Mux 3   PH3
 
-uint16_t transducer_val[4];
+volatile uint16_t transducer_val[16];
 
+//This variable keeps track of which channel is "in flight" - 
+//what the ADC is converting in between calls to transducer_periodic().
+static volatile uint8_t current_channel = 0;
+
+//This variable keeps track of which channel is the one we're reading
+//out of the ADC right now over SPI.
+static volatile uint8_t last_channel = 0;
+
+//keep track of whether a transaction is currently happening
+static volatile bool transaction_in_flight = false;
+
+static void transaction_complete();
+
+// empty the SPI port receive FIFO in preparation for use.
 static void clear_receive_fifo() {
 	uint32_t dummy_data;
 	while(SSIDataGetNonBlocking(SSI2_BASE, &dummy_data) != 0) {}
@@ -79,15 +93,30 @@ void transducer_init() {
 	
 	//wait a bit
 	for(volatile int i=0; i<100l; i++) {}
-	
+		
 	clear_receive_fifo();
+		
+	//set transaction_complete() as the SPI interrupt handler
+	SSIIntRegister(SSI2_BASE, transaction_complete);
 	
-		debug_print("transducer_init() complete\r\n");
+	debug_print("transducer_init() complete\r\n");
 }
 
-static uint16_t do_adc_read() {
+//set the current channel connected to the ADC input pin
+//by changing the control pins on the analog mux IC.
+static void set_amux(uint8_t channel) {
+	GPIOPinWrite(GPIO_PORTH_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, channel & 0x0F);
+}
 
-	uint32_t data0, data1, data2;
+
+// starts an ADC conversion, and reads out the data from the
+// previously started conversion. You must leave at least 3
+// uS between calls for the ADC conversion or this function will 
+// return junk data.
+static void start_transaction() {
+	
+	if(transaction_in_flight) return;
+	transaction_in_flight = true;
 	
 	//bring ~CS low to start the transaction
 	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, 0);
@@ -97,11 +126,19 @@ static uint16_t do_adc_read() {
 	SSIDataPut(SSI2_BASE, 0x00);
 	SSIDataPut(SSI2_BASE, 0x00);
 	
-	//wait for transmit to complete
-	while(SSIBusy(SSI2_BASE)){}
-		
+	//arm the "transmit complete" interrupt (TX End of Transmission).
+	//this will call transaction_complete() when the SPI transaction finishes.
+	SSIIntEnable(SSI2_BASE, SSI_TXEOT);
+
+}
+
+//store the acquired data out of the SPI FIFO.
+static void transaction_complete() {
+	
 	//bring ~CS high to end transaction
 	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_PIN_3);
+	
+	uint32_t data0, data1, data2;
 	
 	//read out 3 bytes from the receive FIFO
 	SSIDataGet(SSI2_BASE, &data0);
@@ -109,40 +146,26 @@ static uint16_t do_adc_read() {
 	SSIDataGet(SSI2_BASE, &data2);
 	
 	uint16_t val = ((data0 << 8) & 0xFF00) | ((data1) & 0xFF);
-		
-	return val;
+	
+	//store decoded value
+	transducer_val[last_channel] = val;
+	
+	transaction_in_flight = false;
 }
 
-static void set_amux(uint8_t channel) {
-	GPIOPinWrite(GPIO_PORTH_BASE, GPIO_PIN_0|GPIO_PIN_1|GPIO_PIN_2|GPIO_PIN_3, channel & 0x0F);
-}
 
+
+//This function uses do_adc_read() for each channel, so it must
+//be called with a delay of at least 3 uS between calls.
 void transducer_periodic() {
 	
-		//convert channel 0
-		set_amux(0);
-		do_adc_read();
+	//get ready to start converting the next channel
+	last_channel = current_channel;
+	current_channel = (current_channel+1) % 16;
 	
-		debug_delay_us(3);
+	//connect the NEXT channel to the ADC.
+	set_amux(current_channel);
 	
-		//convert chan 1, output chan 0
-		set_amux(1);
-		transducer_val[0] = do_adc_read();
-	
-		debug_delay_us(3);
-	
-		//convert chan 2, output chan 1
-		set_amux(2);
-		transducer_val[1] = do_adc_read();
-	
-		debug_delay_us(3);
-	
-		//convert chan 3, output chan 2
-		set_amux(3);
-		transducer_val[2] = do_adc_read();
-		
-		//output chan 3
-		debug_delay_us(3);
-		transducer_val[3] = do_adc_read();
-		
+	//start a new readout
+	start_transaction();
 }

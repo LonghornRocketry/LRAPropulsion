@@ -284,7 +284,7 @@ void network_driver_init(uint32_t sysClkFreq) {
 	uip_arp_init();
 	
 	//initialize uip timers
-	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 20); //set uIP TCP/UDP poll timer for 50ms
+	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 20); //set uIP TCP/UDP poll timer for 20 Hz (50ms) (THE TELEMETRY RATE IS TIED TO THIS..)
 	timer_set(&arp_timer_for_uip, CLOCK_SECOND * 10);     //set uIP ARP timer for 10s
 	
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)

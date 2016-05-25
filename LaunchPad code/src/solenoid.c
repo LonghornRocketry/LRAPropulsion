@@ -21,6 +21,7 @@ SOL 4  - PK4
 SOL 5  - PK5
 SOL 6  - PK6
 SOL 7  - PK7
+
 SOL 8  - PL0
 SOL 9  - PL1
 
@@ -45,6 +46,8 @@ void solenoid_init() {
 		
 	// Configure PC7 as an input
 	GPIOPinTypeGPIOInput(GPIO_PORTC_BASE, GPIO_PIN_7);
+		
+	debug_print("solenoid_init() complete\r\n");
 	
 }
 

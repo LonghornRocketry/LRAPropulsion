@@ -5,7 +5,8 @@
 #include <stdbool.h>
 
 void thermocouple_init(void);
-void thermocouple_periodic(void);
+bool thermocouple_busy(void);
+void thermocouple_start_next_transaction(void);
 
 __packed struct thermocouple_data{
 	int16_t tc_val;
@@ -18,7 +19,7 @@ __packed struct thermocouple_data{
 
 typedef struct thermocouple_data tc_data_t;
 
-extern tc_data_t tc_data;
+extern volatile tc_data_t tc_data[5];
 
 #endif /*THERMOCOUPLE_H*/
 

@@ -15,22 +15,29 @@ void telemetry_init() {
 	debug_print("telemetry_init() complete\r\n");
 }
 
+// NOTE: a telemetry packet is sent every time uIP polls the socket for data.
+// this rate is controlled by the uIP poll timer in network_driver.c
+// (right now it's 20 Hz, or 50 ms).
+
 void telemetry_periodic() {
-	// TODO: implement this as a timer
+	
+	// build a new packet if the last one just got sent
 	if(!new_packet) {
 		
 		//build a new packet
 		
 		packet.timestamp = systick_clock;
-		for(int i=0; i<4; i++) {
-			packet.transducer_val[i] = transducer_val[i];
-		}
-		memcpy(&packet.tc_data, &tc_data, sizeof(tc_data));
-		packet.loops_per_second = loops_per_second;
+
+
+		packet.mainloop_rate = loops_per_second;
 		packet.stand_armed = stand_armed;
 		packet.solenoids_powered = are_solenoids_powered();
 		packet.solenoid_state = solenoid_state;
 		
+		memcpy(&packet.tc_data, &tc_data, sizeof(tc_data));
+		for(int i=0; i<16; i++) {
+			packet.transducer_val[i] = transducer_val[i];
+		}
 		//queue it up for sending
 		new_packet = true;
 		
