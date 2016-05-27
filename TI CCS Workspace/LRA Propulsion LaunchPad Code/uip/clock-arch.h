@@ -2,7 +2,7 @@
 #define __CLOCK_ARCH_H__
 
 #include <stdint.h>
-#include "main.h"
+#include "src/main.h"
 
 //how many clock ticks are in one second?
 #define CLOCK_CONF_SECOND       SYSTICK_FREQ

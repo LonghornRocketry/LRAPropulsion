@@ -139,7 +139,7 @@ tEMACDES3;
 //! A structure defining a single Ethernet DMA buffer descriptor.
 //
 //*****************************************************************************
-struct tEMACDMADescriptor
+struct __attribute__((packed)) tEMACDMADescriptor
 {
     //
     //! The first DMA descriptor word contains various control and status bits

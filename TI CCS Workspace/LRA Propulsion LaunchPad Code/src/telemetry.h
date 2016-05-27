@@ -6,7 +6,7 @@
 
 #include "thermocouple.h"
 
-__packed struct telemetry_packet {
+struct __attribute__ ((packed)) telemetry_packet {
 	
 	//diagnostic info
 	uint32_t timestamp;					//ms, time since poweron

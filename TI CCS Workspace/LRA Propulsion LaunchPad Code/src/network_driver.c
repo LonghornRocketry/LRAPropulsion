@@ -90,7 +90,6 @@ static void transmit_ethernet_frame() {
 }
 
 static void receive_ethernet_frame() {
-	//copy rx data out of the DMA buffer
 	
 	//make sure we own the dma thing
 	if(rxDescriptor[active_rx_desc].ui32CtrlStatus & DES0_RX_CTRL_OWN) {
@@ -125,7 +124,6 @@ static void receive_ethernet_frame() {
 	
 	if(pkt_header->type == htons(UIP_ETHTYPE_IP)) {
 		//it's an IP packet!
-		
 		uip_arp_ipin();
 		uip_input();
 		
@@ -137,6 +135,7 @@ static void receive_ethernet_frame() {
 		uip_len = 0;
 		
 	} else if (pkt_header->type == htons(UIP_ETHTYPE_ARP)) {
+
 		//it's an ARP packet!
 	
 		uip_arp_arpin();
@@ -148,6 +147,7 @@ static void receive_ethernet_frame() {
 		uip_len = 0;
 		
 	} else if (pkt_header->type == htons(UIP_ETHTYPE_IP6)) {
+		//ignore IPv6 packets
 	}
 	//move on to the next DMA descriptor in the chain
 	active_rx_desc++;
@@ -169,14 +169,14 @@ void network_driver_init(uint32_t sysClkFreq) {
 	// Wait for the MAC to be ready
 	while(!SysCtlPeripheralReady(SYSCTL_PERIPH_EMAC0)) {}
   
-  // Configure the PHY
+	// Configure the PHY
 	EMACPHYConfigSet(EMAC0_BASE,
 		EMAC_PHY_TYPE_INTERNAL |  			//use the built-in PHY
 		EMAC_PHY_INT_MDIX_EN |   				//auto crossoverification
 		EMAC_PHY_AN_100B_T_FULL_DUPLEX  //autonegotiation, advertise 100BASE_T
 	);
-		
-  // Reset the MAC
+
+	// Reset the MAC
 	EMACReset(EMAC0_BASE);
 		
 	// Initialize the MAC
@@ -204,17 +204,24 @@ void network_driver_init(uint32_t sysClkFreq) {
 	);
 	
 	// Initialize the DMA descriptors.. I don't really get this part
+
+	//without this memset we enter fun undefined behavior land...
+	memset(txDescriptor, 0, sizeof(txDescriptor));
+
 	txDescriptor[0].ui32Count = (DES1_TX_CTRL_SADDR_INSERT | (TX_BUFFER_SIZE << DES1_TX_CTRL_BUFF1_SIZE_S));
 	txDescriptor[0].pvBuffer1 = tx_buffer;
 	txDescriptor[0].ui32CtrlStatus = (DES0_TX_CTRL_LAST_SEG | DES0_TX_CTRL_FIRST_SEG | DES0_TX_CTRL_INTERRUPT | DES0_TX_CTRL_CHAINED | DES0_TX_CTRL_IP_ALL_CKHSUMS);
-	txDescriptor[0].DES3.pLink = &txDescriptor[1]; //0 -> 1
-	
+
 	txDescriptor[1] = txDescriptor[0];
-	txDescriptor[1].DES3.pLink = &txDescriptor[2]; //1 -> 2
 	
 	txDescriptor[2] = txDescriptor[0];
-	txDescriptor[2].DES3.pLink = &txDescriptor[0]; //2 -> 0 end the chain
+
+    txDescriptor[0].DES3.pLink = &(txDescriptor[1]); //0 -> 1
+    txDescriptor[1].DES3.pLink = &(txDescriptor[2]); //1 -> 2
+    txDescriptor[2].DES3.pLink = &(txDescriptor[0]); //2 -> 0 end the chain
 	
+    memset(rxDescriptor, 0, sizeof(rxDescriptor));
+
 	rxDescriptor[0].ui32CtrlStatus = 0;
 	rxDescriptor[0].ui32Count = (DES1_RX_CTRL_CHAINED | (RX_BUFFER_SIZE << DES1_RX_CTRL_BUFF1_SIZE_S));
 	rxDescriptor[0].pvBuffer1 = rx_buffer;
@@ -284,7 +291,7 @@ void network_driver_init(uint32_t sysClkFreq) {
 	uip_arp_init();
 	
 	//initialize uip timers
-	timer_set(&periodic_timer_for_uip, CLOCK_SECOND / 20); //set uIP TCP/UDP poll timer for 20 Hz (50ms) (THE TELEMETRY RATE IS TIED TO THIS..)
+	timer_set(&periodic_timer_for_uip, CLOCK_SECOND/20); //set uIP TCP/UDP poll timer for 20 Hz (50ms) (THE TELEMETRY RATE IS TIED TO THIS..)
 	timer_set(&arp_timer_for_uip, CLOCK_SECOND * 10);     //set uIP ARP timer for 10s
 	
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)

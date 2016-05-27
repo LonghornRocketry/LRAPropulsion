@@ -49,6 +49,8 @@ void status_led_init() {
 }
 
 void status_led_periodic() {
-	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_4|GPIO_PIN_3, GPIO_PIN_4|GPIO_PIN_3);
+	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_2|GPIO_PIN_4|GPIO_PIN_3, GPIO_PIN_2|GPIO_PIN_4/*|GPIO_PIN_3*/);
 	GPIOPinWrite(GPIO_PORTN_BASE, GPIO_PIN_1, GPIO_PIN_1);
+
+
 }

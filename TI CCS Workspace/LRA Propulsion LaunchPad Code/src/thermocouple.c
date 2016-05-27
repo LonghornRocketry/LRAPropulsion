@@ -6,6 +6,7 @@
 #include "driverlib/ssi.h"
 #include "driverlib/pin_map.h"
 #include "inc/hw_memmap.h"
+#include "inc/tm4c1294ncpdt.h"
 
 #include "thermocouple.h"
 #include "debug.h"
@@ -49,7 +50,8 @@ void thermocouple_init() {
 	//configure PA2 (SCLK) and PA5 (MISO) pins for comm
 	GPIOPinConfigure(GPIO_PA2_SSI0CLK);
 	GPIOPinConfigure(GPIO_PA5_SSI0XDAT1);
-	GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_2 | GPIO_PIN_5);
+    GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_2);
+    GPIOPinTypeSSI(GPIO_PORTA_BASE, GPIO_PIN_5);
 		
 	//configure the SPI port (SSI0). Sample on rising edge
 	SSIClockSourceSet(SSI0_BASE, SSI_CLOCK_SYSTEM);
@@ -63,6 +65,9 @@ void thermocouple_init() {
 	// enable PM0-5 as outputs for the CS pins
 	GPIOPinTypeGPIOOutput(GPIO_PORTM_BASE, GPIO_PIN_0 | GPIO_PIN_1 | GPIO_PIN_2 | GPIO_PIN_3 | GPIO_PIN_4);
 	
+	//make all the ~CSes high
+	GPIOPinWrite(GPIO_PORTM_BASE, 0x1F, 0x1F);
+
 	// set read_out_tc_data() as the interrupt handler for SSI0 interrupts
 	SSIIntRegister(SSI0_BASE, read_out_tc_data);
 		

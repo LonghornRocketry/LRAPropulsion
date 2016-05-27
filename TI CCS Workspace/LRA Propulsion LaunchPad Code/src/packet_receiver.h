@@ -14,7 +14,7 @@
 
 #define PACKET_BASIC 0
 
-__packed struct packet_basic {
+ struct __attribute__ ((packed)) packet_basic {
 	uint8_t stand_arm;
 	uint16_t solenoid_states;
 };

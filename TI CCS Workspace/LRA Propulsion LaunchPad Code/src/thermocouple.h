@@ -8,7 +8,7 @@ void thermocouple_init(void);
 bool thermocouple_busy(void);
 void thermocouple_start_next_transaction(void);
 
-__packed struct thermocouple_data{
+struct __attribute__ ((packed)) thermocouple_data{
 	int16_t tc_val;
 	int16_t internal_temp;
 	bool fault;

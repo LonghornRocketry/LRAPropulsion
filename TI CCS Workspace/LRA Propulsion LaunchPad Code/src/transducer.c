@@ -92,7 +92,7 @@ void transducer_init() {
 	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_PIN_3);
 	
 	//wait a bit
-	for(volatile int i=0; i<100l; i++) {}
+	for(volatile int i=0; i<100l; i++) {};
 		
 	clear_receive_fifo();
 		
@@ -134,16 +134,22 @@ static void start_transaction() {
 
 //store the acquired data out of the SPI FIFO.
 static void transaction_complete() {
-	
+
+	//acknowledge the TX complete interrupt
+	SSIIntClear(SSI2_BASE, SSI_TXEOT);
+
+	//disable the TX complete interrupt
+	SSIIntDisable(SSI2_BASE, SSI_TXEOT);
+
 	//bring ~CS high to end transaction
 	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_PIN_3);
 	
 	uint32_t data0, data1, data2;
 	
 	//read out 3 bytes from the receive FIFO
-	SSIDataGet(SSI2_BASE, &data0);
-	SSIDataGet(SSI2_BASE, &data1);
-	SSIDataGet(SSI2_BASE, &data2);
+	SSIDataGetNonBlocking(SSI2_BASE, &data0);
+	SSIDataGetNonBlocking(SSI2_BASE, &data1);
+	SSIDataGetNonBlocking(SSI2_BASE, &data2);
 	
 	uint16_t val = ((data0 << 8) & 0xFF00) | ((data1) & 0xFF);
 	

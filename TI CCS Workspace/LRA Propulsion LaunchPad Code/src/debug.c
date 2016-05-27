@@ -57,15 +57,22 @@ void debug_print_u32(uint32_t val) {
 	debug_print(buf);
 }
 
+
+
 void debug_print_mac(uint8_t* mac) {
 	char buf[20];
 	snprintf(buf, 20, "%x-%x-%x-%x-%x-%x", mac[0], mac[1], mac[2], mac[3], mac[4], mac[5]); 
 	debug_print(buf);
 }
 
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+// XXX: FIXME: Usage of snprintf in the below function causes a nasty buffer overflow     @
+//             for some reason! (Only on TI CCS, it works fine in Keil). I suspect issues @
+//             in debug_print_mac as well.                                                @
+// @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
 void debug_print_ip(uint8_t* ip) {
 	char buf[20];
-	snprintf(buf, 20, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
+//	snprintf(buf, 20, "%d.%d.%d.%d", ip[0], ip[1], ip[2], ip[3]);
 	debug_print(buf);
 }
 
