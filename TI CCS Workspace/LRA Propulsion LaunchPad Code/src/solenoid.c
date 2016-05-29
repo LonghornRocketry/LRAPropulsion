@@ -60,6 +60,8 @@ void enable_solenoids() {
 	// configure the solenoid pins as outputs
 	GPIOPinTypeGPIOOutput(GPIO_PORTK_BASE, 0xFF);
 	GPIOPinTypeGPIOOutput(GPIO_PORTL_BASE, 0x03);
+
+	solenoids_enabled = true;
 }
 
 void disable_solenoids() {
@@ -71,10 +73,11 @@ void disable_solenoids() {
 	GPIOPinTypeGPIOInput(GPIO_PORTK_BASE, 0xFF);
 	GPIOPinTypeGPIOInput(GPIO_PORTL_BASE, 0x03);
 	
+	solenoids_enabled = false;
 }
 
 void solenoid_periodic() {
-	if (stand_armed) {
+	if (stand_enabled) {
 		
 		if(!solenoids_enabled) enable_solenoids();
 		

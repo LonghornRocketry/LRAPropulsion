@@ -21,7 +21,7 @@ void process_packet(uint8_t* data, uint16_t len) {
 		
 		struct packet_basic *pkt = (struct packet_basic *) data;
 		
-		stand_armed = pkt->stand_arm;
+		stand_enabled = pkt->stand_enable;
 		solenoid_state = pkt->solenoid_states;
 		
 	} else {

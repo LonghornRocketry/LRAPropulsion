@@ -30,7 +30,7 @@ void telemetry_periodic() {
 
 
 		packet.mainloop_rate = loops_per_second;
-		packet.stand_armed = stand_armed;
+		packet.stand_armed = stand_enabled;
 		packet.solenoids_powered = are_solenoids_powered();
 		packet.solenoid_state = solenoid_state;
 		

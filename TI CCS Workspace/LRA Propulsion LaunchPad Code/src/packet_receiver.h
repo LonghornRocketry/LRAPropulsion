@@ -15,8 +15,9 @@
 #define PACKET_BASIC 0
 
  struct __attribute__ ((packed)) packet_basic {
-	uint8_t stand_arm;
 	uint16_t solenoid_states;
+	uint8_t stand_enable;
+	uint32_t timestamp; 		//ms, computer's idea of our timestamp. Reject packet and disable stand if too old.
 };
 
 void process_packet(uint8_t* data, uint16_t len);

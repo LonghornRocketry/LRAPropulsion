@@ -10,3 +10,7 @@
 #(build artifacts)
 TI\ CCS\ Workspace/**/Debug/
 TI\ CCS\ Workspace/**/Release/
+TI\ CCS\ Workspace/**/.launches/
+
+TI\ CCS\ Workspace/.metadata/
+TI\ CCS\ Workspace/RemoteSystemsTempFiles/

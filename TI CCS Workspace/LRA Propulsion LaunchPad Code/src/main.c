@@ -32,7 +32,7 @@ Pin Mappings: https://docs.google.com/spreadsheets/d/1FLoMdekCKLfGqCLHUICYdZ5XRL
 volatile uint32_t loops_per_second;
 
 //global variable containing master arm state ("are solenoids enabled"?)
-volatile uint8_t stand_armed;
+volatile uint8_t stand_enabled;
 
 //global variable containing commanded solenoid sattes
 volatile uint16_t solenoid_state;
@@ -40,18 +40,22 @@ volatile uint16_t solenoid_state;
 //1 kHz counter
 volatile uint32_t systick_clock = 0;
 
-// This runs off the 1 KHz SysTick timer. It is used to schedule
+// This runs off the 20 KHz SysTick timer. It is used to schedule
 // timed actions.
 void sys_tick() {
+
 	systick_clock++;
 	
+	//run LED PWM at 20 KHz
+		status_led_timer_interrupt();
+
 	// run TC reads at 500 Hz (this is divided among TCs so each will get 100 Hz)
-	// 500 Hz @ 1KHz clock = every other clock
-	if(systick_clock % 2 == 0) {
+	// 500 Hz @ 20KHz clock = 40 clocks
+	if(systick_clock % 40 == 0) {
 		thermocouple_start_next_transaction();
 	}
 	
-	// run transducer reads at 1 KHz (TODO: make the rate WAY bigger)
+	// run transducer reads at 10 KHz (TODO: make the rate WAY bigger)
 	transducer_periodic();
 }
 
@@ -74,7 +78,7 @@ int main(void)
 	debug_print("Initialization complete. starting main loop.\r\n");
 	
 	// Set up the SysTick timer and its interrupts
-	SysTickPeriodSet(120000); // 1 kHz
+	SysTickPeriodSet(6000); // 20 kHz
 	SysTickIntRegister(sys_tick);
 	SysTickIntEnable();
 	SysTickEnable(); 
@@ -90,6 +94,8 @@ int main(void)
 		telemetry_periodic();
 		solenoid_periodic();
 		
+	//	debug_print_u32(systick_clock);
+
 		//count loop iterations per second
 		loopIterations++;
 		if(systick_clock - frame_start >= 1000) {
