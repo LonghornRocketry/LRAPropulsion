@@ -21,7 +21,12 @@
 //    Mux 2   PH2
 //    Mux 3   PH3
 
+// Number of samples to average. This makes updates happen more slowly.
+#define AVERAGE_COUNT 32
+
 volatile uint16_t transducer_val[16];
+volatile uint32_t transducer_accum[16];
+volatile uint8_t accum_count = 0;
 
 //This variable keeps track of which channel is "in flight" - 
 //what the ADC is converting in between calls to transducer_periodic().
@@ -141,6 +146,9 @@ static void transaction_complete() {
 	//disable the TX complete interrupt
 	SSIIntDisable(SSI2_BASE, SSI_TXEOT);
 
+	//Delay tConv as ADC converts next channel (3uS)
+	//debug_delay_us(4);
+
 	//bring ~CS high to end transaction
 	GPIOPinWrite(GPIO_PORTB_BASE, GPIO_PIN_3, GPIO_PIN_3);
 	
@@ -154,9 +162,17 @@ static void transaction_complete() {
 	uint16_t val = ((data0 << 8) & 0xFF00) | ((data1) & 0xFF);
 	
 	//store decoded value
-	transducer_val[last_channel] = val;
+	transducer_accum[last_channel] += val;
 	
 	transaction_in_flight = false;
+}
+
+static void do_averaging() {
+
+	for(uint8_t i=0; i < 16; i++) {
+		transducer_val[i] = transducer_accum[i] / AVERAGE_COUNT;
+		transducer_accum[i] = 0;
+	}
 }
 
 
@@ -169,6 +185,15 @@ void transducer_periodic() {
 	last_channel = current_channel;
 	current_channel = (current_channel+1) % 16;
 	
+	//advance accumulator count and do averaging if it's time
+	if(current_channel == 0) {
+		accum_count++;
+		if(accum_count >= AVERAGE_COUNT) {
+			do_averaging();
+			accum_count = 0;
+		}
+	}
+
 	//connect the NEXT channel to the ADC.
 	set_amux(current_channel);
 	
