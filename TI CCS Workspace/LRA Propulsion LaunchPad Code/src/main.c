@@ -55,13 +55,12 @@ void sys_tick() {
 		thermocouple_start_next_transaction();
 	}
 	
-	// run transducer reads at 10 KHz (TODO: make the rate WAY bigger)
+	// run transducer reads at 20 KHz (TODO: make the rate WAY bigger)
 	transducer_periodic();
 }
 
 
-int main(void)
-                                                                                                   {
+int main(void) {
 	// Set the system clock to the full 120MHz
 	uint32_t sysClkFreq = SysCtlClockFreqSet(SYSCTL_XTAL_25MHZ | SYSCTL_OSC_MAIN | SYSCTL_USE_PLL | SYSCTL_CFG_VCO_480, 120000000);
  
