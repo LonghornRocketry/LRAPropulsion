@@ -77,7 +77,7 @@ void disable_solenoids() {
 }
 
 void solenoid_periodic() {
-	if (stand_enabled) {
+	if (stand_enabled && watchdog_is_alive()) {
 		
 		if(!solenoids_enabled) enable_solenoids();
 		
@@ -89,6 +89,7 @@ void solenoid_periodic() {
 		
 	} else {
 		disable_solenoids();
+		stand_enabled = false;
 	}
 }
 

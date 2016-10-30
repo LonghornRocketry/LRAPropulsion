@@ -127,6 +127,8 @@ static void receive_ethernet_frame() {
 		uip_arp_ipin();
 		uip_input();
 		
+	//	debug_print("IP\n");
+
 		//if uIP generated output, send it
 		if(uip_len > 0) {
 			uip_arp_out();
@@ -291,7 +293,7 @@ void network_driver_init(uint32_t sysClkFreq) {
 	uip_arp_init();
 	
 	//initialize uip timers
-	timer_set(&periodic_timer_for_uip, CLOCK_SECOND/20); //set uIP TCP/UDP poll timer for 20 Hz (50ms) (THE TELEMETRY RATE IS TIED TO THIS..)
+	timer_set(&periodic_timer_for_uip, CLOCK_SECOND/100); //set uIP TCP/UDP poll timer for 100 Hz (10ms) (THE TELEMETRY RATE IS TIED TO THIS..)
 	timer_set(&arp_timer_for_uip, CLOCK_SECOND * 10);     //set uIP ARP timer for 10s
 	
 	//give the first receive DMA descriptor to the MAC (by setting the OWN bit)

@@ -22,7 +22,7 @@
 //    Mux 3   PH3
 
 // Number of samples to average. This makes updates happen more slowly.
-#define AVERAGE_COUNT 32
+#define AVERAGE_COUNT 8
 
 volatile uint16_t transducer_val[16];
 volatile uint32_t transducer_accum[16];

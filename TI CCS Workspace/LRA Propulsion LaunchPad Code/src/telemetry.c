@@ -7,6 +7,7 @@
 #include "solenoid.h"
 #include "debug.h"
 #include "main.h"
+#include "watchdog.h"
 
 static bool new_packet = false;
 static telemetry_packet_t packet;
@@ -33,6 +34,7 @@ void telemetry_periodic() {
 		packet.stand_armed = stand_enabled;
 		packet.solenoids_powered = are_solenoids_powered();
 		packet.solenoid_state = solenoid_state;
+	//	packet.watchdog_expired = !watchdog_is_alive();
 		
 		memcpy(&packet.tc_data, &tc_data, sizeof(tc_data));
 		for(int i=0; i<16; i++) {

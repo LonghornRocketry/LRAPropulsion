@@ -15,7 +15,6 @@ struct __attribute__ ((packed)) telemetry_packet {
 	uint32_t transducer_time;   //uS, time spent total for last ISR execution
 	uint32_t thermocouple_rate; //Hz
 	uint32_t thermocouple_time; //uS, time spent total for last ISR execution
-	
 	//status info
 	uint8_t stand_armed;
 	uint8_t solenoids_powered;

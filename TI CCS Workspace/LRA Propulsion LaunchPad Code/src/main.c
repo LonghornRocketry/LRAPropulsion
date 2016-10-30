@@ -47,7 +47,7 @@ void sys_tick() {
 	systick_clock++;
 	
 	//run LED PWM at 20 KHz
-		status_led_timer_interrupt();
+	status_led_timer_interrupt();
 
 	// run TC reads at 500 Hz (this is divided among TCs so each will get 100 Hz)
 	// 500 Hz @ 20KHz clock = 40 clocks
@@ -55,7 +55,7 @@ void sys_tick() {
 		thermocouple_start_next_transaction();
 	}
 	
-	// run transducer reads at 20 KHz (TODO: make the rate WAY bigger)
+	// run transducer reads at 20 KHz (/ 16 TDs = 2.5 kHz each / 8x averaging = 150ish Hz data rate) (TODO: make the rate WAY bigger [lol])
 	transducer_periodic();
 }
 
@@ -77,7 +77,7 @@ int main(void) {
 	debug_print("Initialization complete. starting main loop.\r\n");
 	
 	// Set up the SysTick timer and its interrupts
-	SysTickPeriodSet(6000); // 20 kHz
+	SysTickPeriodSet(6000); // 40 kHz
 	SysTickIntRegister(sys_tick);
 	SysTickIntEnable();
 	SysTickEnable(); 
