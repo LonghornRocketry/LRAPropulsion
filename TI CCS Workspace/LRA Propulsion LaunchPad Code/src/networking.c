@@ -13,7 +13,7 @@
 struct uip_udp_conn *packet_receive_conn;
 struct uip_udp_conn *telemetry_send_conn;
 
-uint8_t remote_ip[4] = {10, 5, 5, 1};
+uint8_t remote_ip[4] = {10, 0, 0, 1};
 #define remote_port    6240
 
 void networking_init() {

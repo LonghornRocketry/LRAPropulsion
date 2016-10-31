@@ -4,8 +4,8 @@
 #include <stdbool.h>
 
 #define IPADDR0 10
-#define IPADDR1 5
-#define IPADDR2 5
+#define IPADDR1 0
+#define IPADDR2 0
 #define IPADDR3 2
 
 #define NETMASK0 255
